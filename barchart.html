@@ -14,7 +14,13 @@
 
     <script type="text/javascript">
 
-        var dataSource = [400,800,200,150,200];
+        var dataSource = [
+            {"firstname" : "Frank", "counter" : 400},
+            {"firstname" : "Mary", "counter" : 800},
+            {"firstname" : "Lewis", "counter" : 200},
+            {"firstname" : "Jane", "counter" : 150},
+            {"firstname" : "Jack", "counter" : 200}
+        ];
 
         var canvasWidth = 500,
             canvasHeight = 500;
@@ -31,7 +37,7 @@
             // this ensures the values do not go beyond the boundry of the canvas
             var barWidthScale = d3.scale.linear()
                 // the min amd max for the data values
-                .domain([0, d3.max(dataSource)])
+                .domain([0, d3.max([800])])
                 // the min and max for the displayed values
                 .range([0, canvasWidth]);
 
@@ -65,28 +71,49 @@
                     // set fill colour for each bar
                     .attr("fill", "red")
                     .attr("width", function (d) {
-                            return barWidthScale(d);
+                            return barWidthScale(d.counter);
                         })
                     .attr("height", barHeight)
                     .attr("y", function (d, i) {
                             return i * barHeightSpaced;
                         });
 
-            // add labels to bars
-            canvas.selectAll("text")
+            // add dataSource.counter labels to end of bars
+            canvas
+                .append("g")
+                .selectAll("text")
                 .data(dataSource)
-                .enter()
-                    .append("text")
-                    .attr("fill", "black")
-                    .attr("x", function (d) {
-                            return barWidthScale(d) + 20;
-                        })
-                    .attr("y", function (d, i) {
-                            return (i * barHeightSpaced) + (barHeight - 5);
-                        })
-                    .text(function (d) {
-                            return d;
-                        });
+                    .enter()
+                        .append("text")
+                        .attr("fill", "black")
+                        .attr("x", function (d) {
+                                return barWidthScale(d.counter) + 20;
+                            })
+                        .attr("y", function (d, i) {
+                                return (i * barHeightSpaced) + (barHeight - 5);
+                            })
+                        .text(function (d) {
+                                return d.counter;
+                            });
+
+            // add dataSource.firstname values to bars
+            canvas
+                .append("g")
+                .selectAll("text")
+                .data(dataSource)
+                    .enter()
+                        .append("text")
+                        .attr("fill", "black")
+                        .attr("x", function (d) {
+                                return 20;
+                            })
+                        .attr("y", function (d, i) {
+                                return (i * barHeightSpaced) + (barHeight - 5);
+                            })
+                        .text(function (d) {
+                                return d.firstname;
+                            });
+
             // create the x-axis for the chart
             canvas.append("g")
                 .attr("transform", "translate(0, " + (barHeightSpaced * dataSource.length) + ")")
