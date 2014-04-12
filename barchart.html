@@ -1,5 +1,6 @@
 <!DOCTYPE html>
     <script src="js/d3.v3.min.js"></script>
+    <script src="js/colorbrewer.js"></script>
 <html>
 <head>
     <title>Bar Chart Example</title>
@@ -55,8 +56,12 @@
                 // this ensures the bars and axes are moved as a group
                 .append("g")
                 // shift chart over 20px and down 20px
-                .attr("transform", "translate(20, 20)")
-;
+                .attr("transform", "translate(20, 20)");
+
+            // use a colour scale to fill the bars
+            var colorScale = d3.scale.ordinal()
+                .domain(dataSource)
+                .range(colorbrewer.RdYlGn[6]);
 
             // draw bars on charts
             var bars = canvas
@@ -69,7 +74,7 @@
                 .enter()
                     .append("rect")
                     // set fill colour for each bar
-                    .attr("fill", "red")
+                    .attr("fill", function(d, i) { return colorScale(i); })
                     .attr("width", function (d) {
                             return barWidthScale(d.counter);
                         })
@@ -86,6 +91,7 @@
                     .enter()
                         .append("text")
                         .attr("fill", "black")
+                        .attr("font-size", "12")
                         .attr("x", function (d) {
                                 return barWidthScale(d.counter) + 20;
                             })
@@ -104,6 +110,7 @@
                     .enter()
                         .append("text")
                         .attr("fill", "black")
+                        .attr("font-size", "12")
                         .attr("x", function (d) {
                                 return 20;
                             })
@@ -115,9 +122,15 @@
                             });
 
             // create the x-axis for the chart
-            canvas.append("g")
+            xAxisGroup = canvas.append("g")
                 .attr("transform", "translate(0, " + (barHeightSpaced * dataSource.length) + ")")
+                .attr("font-size", "12")
                 .call(xAxis);
+
+            // set stroke width of x-axis
+            xAxisGroup.selectAll('path.domain')
+                .style({ 'stroke': 'Black', 'fill': 'none', 'stroke-width': '1px'})
+
         };
 
         window.onload = function() {
